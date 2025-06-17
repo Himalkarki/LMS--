@@ -1,8 +1,23 @@
 import { BookModel } from "../models/bookModel.js";
-
+import{decodeJWT}  from "../utils/generateToken.js";
 //Named export
 export const getBooksController = async (req, res) => {
   try {
+    const token =req?.body?.token;
+ 
+     const foundUser =await decodeJWT(jwtToken);
+
+     console.log(foundUser);
+
+       if(!foundUser){
+        return req.json({
+          success:false,
+          messege: "you are not authorized!!!",
+        });
+       }
+
+
+
     const books = await BookModel.find();
     res.json({
       success: true,
@@ -61,7 +76,7 @@ export const updateBookController = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.json({
-      sucess: false,
+      success: false,
       messege: error.messege,
     });
   }
@@ -79,18 +94,18 @@ export const deleteBookController = async (req, res) => {
       console.log(updateBook);
 
       return res.json({
-        sucess: true,
+        success: true,
         messege: "$(foundBook.title}hasbeen deteted sucessfully!",
       });
     }
     res.json({
-      sucess: false,
+      success: false,
       messege: "Book with id:${BookId}not found",
     });
   } catch (error) {
     console.log(error);
     res.json({
-      sucess: false,
+      success: false,
       messege: error,
       messege,
     });

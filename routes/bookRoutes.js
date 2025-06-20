@@ -6,21 +6,16 @@ import {
   deleteBookController,
 } from "../controllers/bookController.js";
 import { checkAuthorization } from "../middleware/checkAuthorization.js";
-
+import { checkstaffLevelpermission } from "../middleware/checkpermission.js";
 const bookRouter = express.Router();
- bookRouter =express.Router();
- bookRouter.route("/")
- .get(checkAuthorization,getBooksController)
- .post(createBookscontroller)
 
-bookRouter.route("/:id")
-put(updateBooksController)
- 
- .delete(checkAuthorization,deleteBookController)
+bookRouter
+  .route("/")
+  .get(checkAuthorization, getBooksController)
+  .post(checkAuthorization,checkstaffLevelpermission,createBookController);
 
-
-
-
+bookRouter.route("/:id").put(updateBookController)
+.delete(checkAuthorization, deleteBookController);
 
 ///bookRouter.route("/").get(getBooksController).post(createBookController);
 

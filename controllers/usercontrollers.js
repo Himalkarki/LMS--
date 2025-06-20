@@ -1,4 +1,4 @@
-import { UserModel } from "../models/userModel.js";
+import { UserModel } from "../model/userModel.js";
 import { generateToken } from "../utils/generateToken.js";
 
 export const registerUser = async (req, res) => {
@@ -13,8 +13,14 @@ export const registerUser = async (req, res) => {
         message: "User with email: ${reqBody.email} already exists",
       });
     }
-
-    const newUser = await UserModel.create(reqBody);
+       const newUserInfo = {
+        email:reqBody.email,
+        phoneNumber:reqBody.phoneNumber,
+        password:reqBody.password,
+        address:reqBody.adderss,
+        name:reqBody.name,
+       }
+    const newUser = await UserModel.create(newUserInfoBody);
 
     return res.json({
       success: true,
@@ -63,11 +69,6 @@ export const loginUser = async (req, res) => {
         address: foundUser.address,
         phoneNumber: foundUser.phoneNumber,
       };
-       
-   
-
-      
-
       return res.json({
         success: true,
         data: userData,
@@ -80,6 +81,7 @@ export const loginUser = async (req, res) => {
       message: "Invalid Credentials!!!",
     });
   } catch (error) {
+
     console.log(error);
     res.json({
       success: false,

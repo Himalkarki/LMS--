@@ -3,8 +3,11 @@ import { TransactionModel } from "../models/transactionModel.js";
 
 export const getTransactions = async (req, res) => {
   try {
-    const transactions = await TransactionModel.find();
-
+    const transactions = await TransactionModel.find()
+    .populate("issuedBy")
+     .populate("issuedTo")
+    .populate("books");
+    
     return res.json({
       success: false,
       data: transactions,

@@ -19,7 +19,7 @@ export const registerUser = async (req, res) => {
     if (foundUser.length > 0) {
       return res.json({
         success: false,
-        message: `User with email: ${reqBody.email} already exists`,
+        message: "User with email: ${reqBody.email} already exists",
       });
     }
 
@@ -47,7 +47,7 @@ export const registerUser = async (req, res) => {
   }
 };
 
-export const loginUser= async (req, res) => {
+export const loginUser = async (req, res) => {
   try {
     const reqBody = req.body;
 
@@ -75,8 +75,7 @@ export const loginUser= async (req, res) => {
       }
 
       const userData = {
-        
-      _id: foundUser._id,
+        _id: foundUser._id,
         name: foundUser.name,
         email: foundUser.email,
         address: foundUser.address,
@@ -104,8 +103,7 @@ export const loginUser= async (req, res) => {
   }
 };
 
-
- export const updateUser = async (req, res) => {
+export const updateUser = async (req, res) => {
   try {
     const { userId } = req.params;
 
@@ -117,6 +115,17 @@ export const loginUser= async (req, res) => {
       return res.json({
         success: false,
         message: "User not found!!!",
+      });
+    }
+    if (
+      foundUser._id.toString() !== req.user._id.toString() && 
+      !["Admin","Staff"].includes(req.user.role)
+      
+    ) {
+
+      return res.json({
+        success: false,
+        messege: "You cannot update this user!",
       });
     }
 
@@ -165,4 +174,43 @@ export const deleteUser = async (req, res) => {
     });
   }
 };
-        
+
+
+ export const updatepassword = async(req,res) => {
+  try{
+    const{userId} =req.params;
+    const{newPassword,oldPassword} =req.body;
+    const foundUser = await  UserModel.findById(userId);
+
+    if(!foundUser){
+      return res.json({
+        success:false,
+        messege:"user not found!!",
+      })
+        const PasswordMatched =await foundUser.isPasswordValid(oldPassword)
+        if(!PasswordMatched){
+          return res.json({
+            success:false,
+            messege:"Old password doesnot matched",
+          })
+
+        }
+         foundUser.password = newPassword;
+          
+         foundUser.save();
+
+         const userData ={
+          name:foundUser.name,
+
+         };
+
+
+      }
+    }
+ }
+
+
+
+
+
+

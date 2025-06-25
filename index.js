@@ -4,7 +4,14 @@ import bookRouter from "./routes/bookRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import transactionRoutes from "./routes/transactionRoutes.js";
 
+import dotenv from "dotenv";
+
 const app = express();
+
+dotenv.config();
+
+
+
 const port = 5003;
 
 connectToDB();
@@ -26,4 +33,6 @@ app.use("/api/transactions", transactionRoutes);
 
 app.listen(port, () => {
   console.log(`Server running on ${port}`);
+  //const mongoURI = process.env.MONGO_URI;
+  //console.log("url is",mongoURI);
 });

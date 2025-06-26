@@ -175,42 +175,59 @@ export const deleteUser = async (req, res) => {
   }
 };
 
+export const updatePassword = async (req, res) => {
+  try {
+    const { userId } = req.params;
 
- export const updatepassword = async(req,res) => {
-  try{
-    const{userId} =req.params;
-    const{newPassword,oldPassword} =req.body;
-    const foundUser = await  UserModel.findById(userId);
-
-    if(!foundUser){
-      return res.json({
-        success:false,
-        messege:"user not found!!",
-      })
-        const PasswordMatched =await foundUser.isPasswordValid(oldPassword)
-        if(!PasswordMatched){
-          return res.json({
-            success:false,
-            messege:"Old password doesnot matched",
-          })
-
-        }
-         foundUser.password = newPassword;
-          
-         foundUser.save();
-
-         const userData ={
-          name:foundUser.name,
-
-         };
-
-
-      }
+    const { newPassword, oldPassword } = req.body;
+  
+    const foundUser = await UserModel.findById(userId);
+  
+      if (!foundUser) {
+        return res.json({
+          success: false,
+          message: `User with ${userId} not found!`
+        });
     }
- }
+const passwordMatched = await foundUser.isPasswordValid(oldPassword)
+    if (!passwordMatched) {
+      return res.json({
+        success: false,
+        message: "Old Password doesnot matched"
+  })
+}
+if (foundUser._id.toString() !== req.user._id.toString() && !["Admin"].includes(req.user.role)) {
+      return res.json({
+        success: false,
+        message: "You cannot update the password"
+      });
+    }
+    
+    foundUser.password = newPassword;
 
+    foundUser.save();
 
+    const userData = {
+      name: foundUser.name,
+      address: foundUser.address,
+      phoneNumber: foundUser.phoneNumber,
+      role: foundUser.role,
+      email: foundUser.email,
+      _id: foundUser._id
+    }
+    
+    res.json({
+      success: true,
+      message: "Password Updated Successfully",
+      data: userData
+    })
 
+  } catch (error) {
+    console.log(error);
 
-
-
+    res.json({
+      success: false,
+      message: error.message
+    });
+  }
+}

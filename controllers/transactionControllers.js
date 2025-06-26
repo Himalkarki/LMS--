@@ -25,6 +25,10 @@ export const createTransaction = async (req, res) => {
   try {
     const { bookId, issuedTo } = req.body;
     const requestingUser = req.user;
+    const defaultIssuanceAllowedDays = 14;
+    const defaultEstimatedReturnDate = new Date(
+      Date.now() + defaultIssuanceAllowedDays * 24 * 60 * 60 * 1000
+    ).toISOString();
 
     if (!bookId) {
       return res.json({
@@ -54,7 +58,11 @@ export const createTransaction = async (req, res) => {
       issuedTo,
       book: bookId,
       status: requestingUser.role === "Member" ? "Pending" : "Approved",
+      estimatedReturnDate: estimatedReturnDate || defaultEstimatedReturnDate,
     });
+
+    bookExists.availability = false;
+    await bookExists.save;
 
     return res.json({
       success: true,
@@ -189,5 +197,34 @@ export const deleteTransaction = async (req, res) => {
       success: false,
       message: error.message,
     });
+  }
+};
+
+export const returnBook = async (req, res) => {
+  try {
+    const { transactionId } = req.params;
+    const foundTransaction = await TransactionModel.findById(transactionId);
+    if (!foundTransaction) {
+      return res.json({
+        success: false,
+        messege: "No issuse order found!!!",
+      });
+    }
+    foundTransaction.returnedDate = new Date(Date.now()).toISOString();
+    foundTransaction.returnedDate = true;
+    const issuebook = await BookModel.findById(foundTransaction.book);
+    issuebook.availability = true;
+    await issuebook.save();
+    res.json({
+      success: true,
+      messege: "Book returned sucessfully",
+      data: foundTransaction,
+    });
+  } catch (error) {
+    console.log(error),
+      res.json({
+        succcess: false,
+        messege: error.messege,
+      });
   }
 };

@@ -11,7 +11,6 @@ const app = express();
 dotenv.config();
 
 
-
 const port = 5003;
 
 connectToDB();
@@ -32,7 +31,15 @@ app.use("/api/books", bookRouter);
 app.use("/api/transactions", transactionRoutes);
 
 app.listen(port, () => {
-  console.log(`Server running on ${port}`);
+
+ const f14daysfromNow= Date.now()+ 14*24*60*60*1000;
+console.log(
+
+   new Date(f14daysfromNow).toTimeString(),
+   new Date(f14daysfromNow).toDateString(),
+   new Date(f14daysfromNow).toISOString(),
+)
+  console.log(`Server running on ${port}`); 
   //const mongoURI = process.env.MONGO_URI;
   //console.log("url is",mongoURI);
 });
